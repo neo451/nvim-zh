@@ -12,5 +12,8 @@ neovim中文输入改进计划
 ## 跳转和搜索 jumps & search
 [leap-zh.nvim](https://github.com/noearc/leap-zh.nvim)
 
+## 加入盘古之白 pangu.nvim
+[pangu.nvim](https://github.com/noearc/pangu.nvim)
+
 ## 中文输入法 input method [WIP]
 [cmp-im-flypy](https://github.com/noearc/cmp-im-flypy)
