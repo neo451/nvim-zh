@@ -6,11 +6,11 @@ neovim中文输入改进计划
 - 尽量用纯lua编写
 - 尽可能接近原生vim功能
 
-## 中文输入法 input method
-[cmp-im-flypy](https://github.com/noearc/cmp-im-flypy)
-
 ## 单词跳转和单词操作 motion & textobject
 [jieba.nvim](https://github.com/noearc/jieba.nvim)
 
 ## 跳转和搜索 jumps & search
-[leap-zh](https://github.com/noearc/leap-zh.nvim)
+[leap-zh.nvim](https://github.com/noearc/leap-zh.nvim)
+
+## 中文输入法 input method [WIP]
+[cmp-im-flypy](https://github.com/noearc/cmp-im-flypy)
