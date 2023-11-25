@@ -7,7 +7,7 @@ neovim中文输入改进计划
 - 尽可能接近原生vim功能
 
 ## 中文输入法 input method
-[flypy.nvim](https://github.com/noearc/flypy.nvim)
+[cmp-im-flypy](https://github.com/noearc/cmp-im-flypy)
 
 ## 单词跳转和单词操作 motion & textobject
 [jieba.nvim](https://github.com/noearc/jieba.nvim)
