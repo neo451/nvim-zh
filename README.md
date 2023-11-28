@@ -7,19 +7,24 @@ neovim中文输入改进计划
 * 尽可能接近原生vim功能
 
 ## 单词跳转和单词操作 motion & textobject
-* [jieba.nvim](https://github.com/noearc/jieba.nvim)
+* 纯lua实现单词跳转和textobject：[jieba.nvim](https://github.com/noearc/jieba.nvim) BY noearc
+* python实现单词跳转：[jieba.vim](https://github.com/kkew3/jieba.vim) BY kkew3
+* cpp实现单词跳转，需本地编译：[jieba_nvim](https://github.com/cathaysia/jieba_nvim) BY cathaysia
 
 ## 跳转和搜索 jumps & search
-* [leap-zh.nvim](https://github.com/noearc/leap-zh.nvim)
-
-## 加入盘古之白 pangu.nvim
-* [pangu.nvim](https://github.com/noearc/pangu.nvim)
-
+* [leap-zh.nvim](https://github.com/noearc/leap-zh.nvim) BY noearc
+* [flash-zh.nvim](https://github.com/rainzm/flash-zh.nvim) BY rainzm
+* [hop-zh-by-flypy](https://github.com/zzhirong/hop-zh-by-flypy) BY zzhirong
+* [vim-easymotion-zh](https://github.com/zzhirong/vim-easymotion-zh) BY zzhirong
+* [vim-PinyinSearch](https://github.com/ppwwyyxx/vim-PinyinSearch) BY ppwwyyxx
+  
 ## 中文输入法 input method [WIP]
 * 基于lsp的全拼解决方案：[ds-pinyin-lsp](https://github.com/iamcco/ds-pinyin-lsp) BY @iamcco
 * 基于nvim-cmp的任意输入方式解决方案：[cmp-im](https://github.com/yehuohan/cmp-im) BY @yehuohan
-* [cmp-im-flypy](https://github.com/noearc/cmp-im-flypy) [WIP]
+* 基于nvim-cmp的小鹤音形，需本地编译：(https://github.com/wasden/cmp-flypy.nvim) BY wasden
+* 基于nvim-cmp的小鹤音形，纯lua：[cmp-im-flypy](https://github.com/noearc/cmp-im-flypy) [WIP] BY noearc
 
 ## Linter
-* [ChineseLinter.vim](https://github.com/wsdjeg/ChineseLinter.vim)
+* 中文文本规范检查：[ChineseLinter.vim](https://github.com/wsdjeg/ChineseLinter.vim) BY wsdjeg
+* 自动加入盘古之白：[pangu.nvim](https://github.com/noearc/pangu.nvim) BY noearc
 * [zhlint](https://github.com/zhlint-project/zhlint) [未测试]
