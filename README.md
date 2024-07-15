@@ -19,6 +19,9 @@ neovim中文输入改进计划
 * [vim-PinyinSearch](https://github.com/ppwwyyxx/vim-PinyinSearch) BY ppwwyyxx
   
 ## 中文输入法 input method [WIP]
+* 基于lsp和rime的解决方案：[rime_ls](https://github.com/wlh320/rime-ls) BY @wlh320
+* rime_ls neovim 配置示例：https://github.com/wlh320/rime-ls/blob/master/doc/nvim.md
+* 基于rime_ls和nvim-cmp的插件：https://github.com/liubianshi/cmp-lsp-rimels
 * 基于lsp的全拼解决方案：[ds-pinyin-lsp](https://github.com/iamcco/ds-pinyin-lsp) BY @iamcco
 * 基于nvim-cmp的任意输入方式解决方案：[cmp-im](https://github.com/yehuohan/cmp-im) BY @yehuohan
 * 基于nvim-cmp的小鹤音形，需本地编译：(https://github.com/wasden/cmp-flypy.nvim) BY wasden
