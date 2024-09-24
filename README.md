@@ -1,4 +1,4 @@
-# neovim中文输入改进计划
+# neovim 中文输入改进计划
 
 目前 neovim 中文输入插件支持较差，在中文文本上使用 vim motion 是很尴尬的。可能的解决方案的线索都已经存在，但是要么需要手动编译，要么要自己配置一些文件目录，要么需要写 vimscript 来配置，如果想写中文 markdown/org/norg，体验都会很差，本计划希望通过填补空缺，并收录已有的解决方案，来打破这个壁垒。
 
@@ -9,17 +9,28 @@
 
 ## 单词跳转和单词操作 motion & textobject
 
-- 纯lua实现单词跳转和 textobject：[jieba.nvim](https://github.com/noearc/jieba.nvim) BY noearc
-- python 实现单词跳转：[jieba.vim](https://github.com/kkew3/jieba.vim) BY kkew3
-- cpp 实现单词跳转，需本地编译：[jieba_nvim](https://github.com/cathaysia/jieba_nvim) BY cathaysia
+- 纯lua实现单词跳转和 textobject：
+jieba.nvim: ![GitHub Repo stars](https://img.shields.io/github/stars/noearc/jieba.nvim)
+- python/rust 实现单词跳转：
+jieba.vim: ![GitHub Repo stars](https://img.shields.io/github/stars/kkew3/jieba.vim)
 
 ## 跳转和搜索 jumps & search
 
-- [leap-zh.nvim](https://github.com/noearc/leap-zh.nvim) BY noearc
-- [flash-zh.nvim](https://github.com/rainzm/flash-zh.nvim) BY rainzm
-- [hop-zh-by-flypy](https://github.com/zzhirong/hop-zh-by-flypy) BY zzhirong
-- [vim-easymotion-zh](https://github.com/zzhirong/vim-easymotion-zh) BY zzhirong
-- [vim-PinyinSearch](https://github.com/ppwwyyxx/vim-PinyinSearch) BY ppwwyyxx
+### 跳转
+
+- flash-zh.nvim: ![GitHub Repo stars](https://img.shields.io/github/stars/rainzm/flash-zh.nvim)
+
+- vim-easymotion-zh:
+![GitHub Repo stars](https://img.shields.io/github/stars/zzhirong/vim-easymotion-zh)
+- leap-zh.nvim:
+![GitHub Repo stars](https://img.shields.io/github/stars/noearc/leap-zh.nvim)
+- hop-zh-by-flypy: ![GitHub Repo stars](https://img.shields.io/github/stars/zzhirong/hop-zh-by-flypy)
+
+### 搜索
+
+- vim-PinyinSearch: ![GitHub Repo stars](https://img.shields.io/github/stars/ppwwyyxx/vim-PinyinSearch)
+
+(<https://github.com/ppwwyyxx/vim-PinyinSearch>) BY ppwwyyxx
 
 ## 中文输入法 input method
 
