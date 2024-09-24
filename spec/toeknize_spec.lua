@@ -20,6 +20,7 @@ describe("strchars", function()
       eq("你好wo", ut.sub("你好world", 1, 4))
    end)
 end)
+
 describe("split_string", function()
    it("should split neighbouring str with same type", function()
       eq("western", ut.type "hello")

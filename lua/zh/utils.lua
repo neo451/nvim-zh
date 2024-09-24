@@ -41,6 +41,7 @@ local L = {
 
 local function updateL(name)
    return function(tok)
+      print(tok)
       L.start[#L.start + 1] = #tok + L.start[#L.start]
       L.type[#L.type + 1] = name
       L.content[#L.content + 1] = tok
@@ -54,6 +55,8 @@ local half_punc = C(S "·.,;!?()[]{}+-=_!@#$%^&*~`'\"<>:|\\" ^ 1) / updateL "hal
 
 local full_punc = (utfR(0x3000, 0x303F) + utfR(0xFF01, 0xFF5E) + utfR(0x2000, 0x206F)) ^ 1 / updateL "fullwidth"
 
+local full_num = C(utfR(0xFF10, 0xFF19) ^ 1) / updateL "full_number"
+
 local engs = C(R("az", "AZ") ^ 1) / updateL "western"
 
 --- TODO: make more robust
@@ -61,7 +64,7 @@ local nums = C(R "09" ^ 1) / updateL "number"
 
 local space = C(S " \t\n" ^ 1) / updateL "space"
 
-local rules = (nums + engs + full_punc + half_punc + hans + space) ^ 1
+local rules = (full_num + nums + engs + full_punc + half_punc + hans + space) ^ 1
 
 ---@param str string
 ---@return table

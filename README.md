@@ -9,10 +9,13 @@
 
 ## 单词跳转和单词操作 motion & textobject
 
-- 纯lua实现单词跳转和 textobject：
-jieba.nvim: ![GitHub Repo stars](https://img.shields.io/github/stars/noearc/jieba.nvim)
-- python/rust 实现单词跳转：
-jieba.vim: ![GitHub Repo stars](https://img.shields.io/github/stars/kkew3/jieba.vim)
+- 纯 lua 实现单词跳转和 textobject: **jieba.nvim**
+
+![GitHub Repo stars](https://img.shields.io/github/stars/noearc/jieba.nvim)
+
+- python/rust 实现单词跳转: **jieba.vim**
+
+![GitHub Repo stars](https://img.shields.io/github/stars/kkew3/jieba.vim)
 
 ## 跳转和搜索 jumps & search
 
@@ -22,8 +25,10 @@ jieba.vim: ![GitHub Repo stars](https://img.shields.io/github/stars/kkew3/jieba.
 
 - vim-easymotion-zh:
 ![GitHub Repo stars](https://img.shields.io/github/stars/zzhirong/vim-easymotion-zh)
+
 - leap-zh.nvim:
 ![GitHub Repo stars](https://img.shields.io/github/stars/noearc/leap-zh.nvim)
+
 - hop-zh-by-flypy: ![GitHub Repo stars](https://img.shields.io/github/stars/zzhirong/hop-zh-by-flypy)
 
 ### 搜索
@@ -40,7 +45,7 @@ jieba.vim: ![GitHub Repo stars](https://img.shields.io/github/stars/kkew3/jieba.
 - 基于 lsp 的全拼解决方案：[ds-pinyin-lsp](https://github.com/iamcco/ds-pinyin-lsp) BY @iamcco
 - 基于 nvim-cmp 的任意输入方式解决方案：[cmp-im](https://github.com/yehuohan/cmp-im) BY @yehuohan
 - 基于 nvim-cmp 的小鹤音形，需本地编译：[nvim-cmp](https://github.com/wasden/cmp-flypy.nvim) BY wasden
-- 基于 nvim-cmp 的小鹤音形，纯lua：[cmp-im-flypy](https://github.com/noearc/cmp-im-flypy) [WIP] BY noearc
+- 基于 nvim-cmp 的小鹤音形，纯 lua：[cmp-im-flypy](https://github.com/noearc/cmp-im-flypy) [WIP] BY noearc
 
 ## Linter
 
