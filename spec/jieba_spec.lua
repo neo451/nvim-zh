@@ -14,18 +14,17 @@ end)
 
 describe("calc", function()
    it("should calc correct path for in dict words", function()
-      local dag = M.get_DAG "我爱北京天安门"
-      eq({ 1, 2, 4, 4, 7, 6, 7, 0 }, M.calc("我爱北京天安门", dag))
+      Pr(M.calc "我爱北京天安门")
+      eq({ 1, 2, 4, 4, 7, 6, 7 }, M.calc "我爱北京天安门")
    end)
 end)
 
 describe("cut_no_hmm", function()
    it("should cut with hidden markov algo", function()
-      local target = { "我", "爱", "北京", "天安门" }
-      local index = 1
-      for word in M.cut_no_hmm "我爱北京天安门" do
-         eq(target[index], word)
-         index = index + 1
+      local target = { "我", "爱", [4] = "北京", [7] = "天安门" }
+      for num, word in M.cut_no_hmm "我爱北京天安门" do
+         print(num, word)
+         eq(target[num], word)
       end
    end)
 end)

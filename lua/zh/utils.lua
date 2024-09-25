@@ -2,6 +2,7 @@ local M = {}
 
 local lpeg = vim.lpeg
 local C, S, utfR, R = lpeg.C, lpeg.S, lpeg.utfR, lpeg.R
+local strwidth = vim.fn.strwidth
 
 -- 字符集	字数	Unicode 编码
 -- 基本汉字	20902字	4E00-9FA5
@@ -29,10 +30,11 @@ local C, S, utfR, R = lpeg.C, lpeg.S, lpeg.utfR, lpeg.R
 ---@alias ZhType string # TODO:
 
 ---@class ZhState
----@field start integer
----@field type ZhType
----@field content string # TODO: maybe removed once there is effective solution to get with range
+---@field start integer[]
+---@field type ZhType[]
+---@field content string[] # TODO: maybe removed once there is effective solution to get with range
 
+---@type ZhState
 local L = {
    start = { 0 },
    type = {},
@@ -41,8 +43,7 @@ local L = {
 
 local function updateL(name)
    return function(tok)
-      print(tok)
-      L.start[#L.start + 1] = #tok + L.start[#L.start]
+      L.start[#L.start + 1] = strwidth(tok) + L.start[#L.start]
       L.type[#L.type + 1] = name
       L.content[#L.content + 1] = tok
    end
@@ -67,7 +68,7 @@ local space = C(S " \t\n" ^ 1) / updateL "space"
 local rules = (full_num + nums + engs + full_punc + half_punc + hans + space) ^ 1
 
 ---@param str string
----@return table
+---@return ZhState
 function M.parse(str)
    --check no \n
    rules:match(str)
@@ -76,6 +77,8 @@ function M.parse(str)
    return retL
 end
 
+---@param str string
+---@return string[]
 function M.split_string(str)
    return M.parse(str).content
 end
@@ -102,12 +105,16 @@ function M.is_punctuation(c)
    return (M.type(c) == "fullwidth") or (M.type(c) == "halfwidth")
 end
 
-local p = "[%z\1-\127\194-\244][\128-\191]*"
-
+---@param str string
+---@return Iter
 M.zsplit = function(str)
+   local p = "[%z\1-\127\194-\244][\128-\191]*"
    return vim.iter(string.gmatch(str, p)):enumerate()
 end
 
+---@param str string
+---@param startChar integer
+---@param endChar integer
 ---@return string
 M.sub = function(str, startChar, endChar)
    local res = M.zsplit(str)

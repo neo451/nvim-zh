@@ -11,6 +11,7 @@ local sub = ut.sub
 
 local exclude_in_rep = {
    ["#"] = true,
+   ["*"] = true,
 }
 
 ---@param s string
@@ -139,7 +140,6 @@ local map = {
 local ok, null_ls = pcall(require, "null-ls")
 
 if ok then
-   print "registering!"
    null_ls.register {
       method = null_ls.methods.DIAGNOSTICS,
       filetypes = { "markdown", "text", "norg" },

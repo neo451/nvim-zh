@@ -4,6 +4,7 @@ local hmm = require "zh.jieba.hmm"
 local str_match = string.match
 local log = math.log
 local len = vim.fn.strchars
+local sub = ut.sub
 
 local M = {
    initialized = false,
@@ -25,7 +26,7 @@ end
 
 M.initialize = function()
    local t = os.clock()
-   local dict = require "jieba.dict" or gen_pfdict "data/dict.txt"
+   local dict = require "zh.jieba.dict" or gen_pfdict "data/dict.txt"
    M.dict = dict
    -- HACK:
    for word, v in pairs(M.dict) do
@@ -35,42 +36,42 @@ M.initialize = function()
 end
 
 local get_DAG = function(sentence)
-   local DAG = {}
-   local N = vim.fn.strchars(sentence)
-   local frag = ""
+   local DAG, N = {}, len(sentence)
    for k = 1, N do
-      DAG[k] = {}
-      local i = k
-      frag = ut.sub(sentence, k, k)
-      while i <= N and M.dict[frag] do
-         DAG[k][#DAG[k] + 1] = i
-         i = i + 1
-         frag = ut.sub(sentence, k, i)
+      local t = {}
+      for j = k, N do
+         local frag = sub(sentence, k, j)
+         if M.dict[frag] then
+            t[#t + 1] = j
+         end
       end
-      if #DAG[k] == 0 then
-         DAG[k][1] = k
-      end
+      DAG[k] = (#t == 0) and { k } or t
    end
    return DAG
 end
 M.get_DAG = get_DAG
 
-local calc = function(sentence, DAG)
-   local N = vim.fn.strchars(sentence)
-   local route = {}
-   route[N + 1] = { 0, 0 }
+---return route of sentence
+---@param sentence string
+---@return table
+local calc = function(sentence)
+   local DAG = get_DAG(sentence)
+   local N = len(sentence)
+   local route = {
+      [N + 1] = { 0, 0 },
+   }
    for i = N, 1, -1 do
-      local tmp_list = {}
+      local t = {}
       for j = 1, #DAG[i] do
          local x = DAG[i][j]
-         tmp_list[#tmp_list + 1] = { (M.dict[ut.sub(sentence, i, x)] or 0) + route[x + 1][1], x }
-         -- print(tmp_list[#tmp_list][1])
+         t[#t + 1] = { (M.dict[sub(sentence, i, x)] or 0) + route[x + 1][1], x }
       end
-      table.sort(tmp_list, function(a, b)
+      table.sort(t, function(a, b)
          return a[1] > b[1]
       end)
-      route[i] = tmp_list[1]
+      route[i] = t[1]
    end
+   route[N + 1] = nil
    return vim.iter(route):fold({}, function(acc, k)
       acc[#acc + 1] = k[2]
       return acc
@@ -78,84 +79,26 @@ local calc = function(sentence, DAG)
 end
 M.calc = calc
 
-local function cut_all(sentence)
-   local DAG = get_DAG(sentence)
-   local old_j = -1
-   local k, v = 0, nil
-   local v_index = 0
-   return function()
-      while k <= #DAG do
-         -- When we need to move to the next set of end positions or start the loop
-         if not v or v_index >= #v then
-            k = k + 1
-            if k > #DAG then
-               return nil
-            end -- End of DAG, stop iteration
-            v = DAG[k]
-
-            v_index = 1
-         else
-            v_index = v_index + 1 -- Move to the next end position in the current set
-         end
-         if #v == 1 and k > old_j then
-            old_j = v[1]
-            return ut.sub(sentence, k, v[1])
-         end
-         for i = v_index, #v do
-            local j = v[i]
-            if j > k and j > old_j then -- Ensure non-overlapping segments
-               old_j = j -- Update the last used endpoint
-               v_index = i -- Update v_index for the next iteration
-               return ut.sub(sentence, k, j) -- Using native Lua substring operation
-            end
-         end
-      end
-   end
-end
-
 function M.cut_no_hmm(sentence)
-   local DAG = get_DAG(sentence)
-   local route = calc(sentence, DAG)
-   local x = 1
-   local N = vim.fn.strchars(sentence)
-   local buf = ""
-
-   return function()
-      while x <= N do
-         local y = route[x]
-         local l_word = ut.sub(sentence, x, y)
-         if vim.fn.strchars(l_word) == 1 and ut.is_eng(l_word) then
-            buf = buf .. l_word
-            x = y + 1
-         else
-            if #buf > 0 then
-               local result = buf
-               buf = ""
-               x = x + 1
-               return result
-            end
-            x = y + 1
-            return l_word
-         end
+   local f = function(route, i)
+      i = i + 1
+      if i > #route then
+         return nil
       end
-      if #buf > 0 then
-         local result = buf
-         buf = ""
-         return result
-      end
+      local pos = route[i]
+      return pos, sub(sentence, i, pos)
    end
+   return f, calc(sentence), 0
 end
 
 local function cut_hmm(sentence)
-   local DAG = get_DAG(sentence)
-   local route = calc(sentence, DAG)
+   local route, N = calc(sentence)
    local x = 1
-   local N = len(sentence)
    local buf = ""
    local res = {}
    while x <= N do
-      local y = route[x][2]
-      local l_word = ut.sub(sentence, x, y)
+      local y = route[x]
+      local l_word = sub(sentence, x, y)
       if y == x then
          buf = buf .. l_word
       else
@@ -197,23 +140,33 @@ local function cut_hmm(sentence)
    return res
 end
 
-M.lcut = function(sentence, all, HMM)
+M.lcut = function(sentence, HMM)
    local res = {}
    local cutfunc
-   if all then
-      cutfunc = cut_all
-   elseif HMM then
+   if HMM then
       cutfunc = cut_hmm
    else
       cutfunc = M.cut_no_hmm
    end
-   local blocks = ut.split_similar_char(sentence)
+   local blocks = ut.split_string(sentence)
    for _, v in ipairs(blocks) do
+      -- TODO: check iff zh, then use cutfunc
       for word in cutfunc(v) do
+         print(word)
          res[#res + 1] = word
       end
    end
    return res
 end
 
+M.cut = function(sentence)
+   return vim.iter(M.lcut(sentence))
+end
+
+-- Pr(vim.iter(M.cut_no_hmm "你好世界123"):totable())
+
+-- for v in M.cut "你好世界123" do
+--    print(v)
+-- end
+--
 return M
