@@ -109,7 +109,9 @@ end
 ---@return Iter
 M.zsplit = function(str)
    local p = "[%z\1-\127\194-\244][\128-\191]*"
-   return vim.iter(string.gmatch(str, p)):enumerate()
+   return vim.iter(string.gmatch(str, p)):enumerate():map(function(k, v)
+      return v, k
+   end)
 end
 
 ---@param str string
@@ -118,19 +120,19 @@ end
 ---@return string
 M.sub = function(str, startChar, endChar)
    local res = M.zsplit(str)
-      :filter(function(i, _)
+      :filter(function(_, i)
          return (i >= startChar) and (i <= endChar)
       end)
-      :fold({}, function(acc, _, v)
-         acc[#acc + 1] = v
+      :fold({}, function(acc, word, _)
+         acc[#acc + 1] = word
          return acc
       end)
    return table.concat(res, "")
 end
 
 M.split_char = function(str)
-   return M.zsplit(str):fold({}, function(acc, k, v)
-      acc[k] = v
+   return M.zsplit(str):fold({}, function(acc, word, n)
+      acc[n] = word
       return acc
    end)
 end

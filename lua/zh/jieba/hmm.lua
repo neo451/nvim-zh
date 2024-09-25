@@ -107,115 +107,46 @@ local function viterbi(obs, states, start_p, trans_p, emit_p)
       end
    end
    prob = max_prob
-   return prob, path[state]
+   return path[state]
 end
 
-local function cut(sentence, start_p, trans_p, emit_p)
+local function __cut(sentence)
    local str = ut.split_char(sentence)
-   local _, pos_list = viterbi(str, { "B", "M", "E", "S" }, start_p, trans_p, emit_p)
-   local result = {}
-   local begin, nexti = 1, 1
-   local sentence_length = #str
-   for i = 1, sentence_length do
-      local char = str[i]
-      local pos = pos_list[i]
-      if pos == "B" then
-         begin = i
-      elseif pos == "E" then
-         local res = {}
-         for _, v in pairs { unpack(str, begin, i) } do
-            res[#res + 1] = v
+   local pos_list = viterbi(str, { "B", "M", "E", "S" }, start, trans, emit)
+   local begin = 1
+   local f = function(list, i)
+      i = i + 1
+      while i <= #str do
+         local char = str[i]
+         local T = list[i]
+         if T == "B" then
+            begin = i
+         elseif T == "E" then
+            local buf = {}
+            for j = begin, i do
+               buf[#buf + 1] = str[j]
+            end
+            return i, table.concat(buf, "")
+         elseif T == "S" then
+            return i, char
          end
-         local val = table.concat(res)
-         result[#result + 1] = val
-         nexti = i + 1
-      elseif pos == "S" then
-         result[#result + 1] = char
-         nexti = i + 1
+         i = i + 1
       end
    end
-   if nexti <= sentence_length then
-      result[#result] = str[nexti]
-   end
-   return result
+   return f, pos_list, 0
 end
 
-local function cut_iter(sentence)
-   local str = ut.split_char(sentence)
-   local _, pos_list = viterbi(str, { "B", "M", "E", "S" }, start, trans, emit)
-   local sentence_length = #str
-   -- local state = 1
+-- print(vim.iter(cut "韩冰是好人"):next())
 
-   local function iter(param, state)
-      local begin, nexti = state, state
-      while nexti <= sentence_length do
-         local char = str[nexti]
-         local pos = pos_list[nexti]
-         if pos == "B" then
-            begin = nexti
-            nexti = nexti + 1
-         elseif pos == "E" then
-            local res = {}
-            for i = begin, nexti do
-               table.insert(res, str[i])
-            end
-            coroutine.yield(table.concat(res))
-            nexti = nexti + 1
-         -- return table.concat(res)
-         elseif pos == "S" then
-            coroutine.yield(char)
-            nexti = nexti + 1
-         -- return char
-         else -- For 'M' and handling continuous 'B' without an 'E' which is unlikely but safer to handle.
-            nexti = nexti + 1
-         end
-         if begin < nexti and nexti > sentence_length then
-            -- Handling case if the last word in the sentence ends with 'B' or 'M'
-            local res = {}
-            for i = begin, nexti - 1 do
-               table.insert(res, str[i])
-            end
-            if #res > 0 then
-               -- return table.concat(res)
-               coroutine.yield(table.concat(res))
-            end
-         end
-      end
-   end
-
-   return coroutine.wrap(function()
-      iter(str, 1)
-   end)
-   -- return iter
-end
-
--- -- Example usage:
--- for word in cut_iter("南京市长江大桥") do
---    print(word)
--- end
-
--- local Force_Split_Words = {}
-
+---comment
+---@param sentence string
+---@return Iter
 function M.cut(sentence)
-   local blocks = ut.split_string(sentence)
-   local result = {}
-   for _, blk in ipairs(blocks) do
-      if ut.is_chinese(blk) then
-         -- local l = M.lcut(blk)
-         -- for _, word in pairs(l) do
-         --    result[#result + 1] = word
-         -- end
-         for word in cut_iter(blk) do
-            result[#result + 1] = word
-         end
-      else
-         print(blk)
-         for _, word in pairs(ut.split_string(blk)) do
-            result[#result + 1] = word
-         end
-      end
-   end
-   return result
+   local index = 0
+   return vim.iter(__cut(sentence)):map(function(_, v)
+      index = index + 1
+      return v, index
+   end)
 end
 
 return M

@@ -9,7 +9,7 @@ describe("strchars", function()
 
    it("should iterate all zh-chars", function()
       local target = { "你", "好", "w", "o", "r", "l", "d" }
-      for num, word in ut.zsplit "你好world" do
+      for word, num in ut.zsplit "你好world" do
          eq(target[num], word)
       end
    end)

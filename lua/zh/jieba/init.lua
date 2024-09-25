@@ -5,6 +5,7 @@ local str_match = string.match
 local log = math.log
 local len = vim.fn.strchars
 local sub = ut.sub
+local zsplit = ut.zsplit
 
 local M = {
    initialized = false,
@@ -79,6 +80,11 @@ local calc = function(sentence)
 end
 M.calc = calc
 
+---split sentence by dict, input must be zh-sentence
+---@param sentence any
+---@return function
+---@return table
+---@return integer
 function M.cut_no_hmm(sentence)
    local f = function(route, i)
       i = i + 1
@@ -91,82 +97,68 @@ function M.cut_no_hmm(sentence)
    return f, calc(sentence), 0
 end
 
-local function cut_hmm(sentence)
-   local route, N = calc(sentence)
+---split sentence by hmm, input must be zh-sentence
+---@param sentence string
+function M.cut_hmm(sentence)
+   local route = calc(sentence)
    local x = 1
+   local n = 0
    local buf = ""
-   local res = {}
-   while x <= N do
-      local y = route[x]
-      local l_word = sub(sentence, x, y)
-      if y == x then
-         buf = buf .. l_word
-      else
-         if buf ~= "" then
-            if len(buf) == 1 then
-               res[#res + 1] = buf
+   return coroutine.wrap(function()
+      while x <= #route do
+         local y = route[x]
+         local l_word = sub(sentence, x, y)
+         if y == x then
+            buf = buf .. l_word
+         else
+            if buf ~= "" then
+               if len(buf) == 1 then
+                  n = n + 1
+                  coroutine.yield(n, buf)
+                  buf = ""
+               elseif not M.dict[buf] then
+                  for word in hmm.cut(buf) do
+                     n = n + 1
+                     coroutine.yield(n, word)
+                  end
+               else
+                  for word in zsplit(buf) do
+                     n = n + 1
+                     coroutine.yield(n, word)
+                  end
+               end
                buf = ""
-            elseif not M.dict[buf] then
-               local recognized = hmm.cut(buf)
-               for _, word in ipairs(recognized) do
-                  res[#res + 1] = word
-               end
-            else
-               for _, word in codes(buf) do
-                  res[#res + 1] = word
-               end
             end
-            buf = ""
+            n = n + 1
+            coroutine.yield(n, l_word)
          end
-         res[#res + 1] = l_word
+         x = y + 1
       end
-      x = y + 1
-   end
-
-   if buf ~= "" then
-      if len(buf) == 1 then
-         res[#res + 1] = buf
-      elseif not M.dict[buf] then
-         local recognized = hmm.cut(buf)
-         for _, word in ipairs(recognized) do
-            res[#res + 1] = word
-         end
-      else
-         for _, word in codes(buf) do
-            res[#res + 1] = word
-         end
-      end
-   end
-   return res
+   end)
 end
 
-M.lcut = function(sentence, HMM)
-   local res = {}
+M.cut = function(sentence, HMM)
    local cutfunc
    if HMM then
-      cutfunc = cut_hmm
+      cutfunc = M.cut_hmm
    else
       cutfunc = M.cut_no_hmm
    end
-   local blocks = ut.split_string(sentence)
-   for _, v in ipairs(blocks) do
-      -- TODO: check iff zh, then use cutfunc
-      for word in cutfunc(v) do
-         print(word)
-         res[#res + 1] = word
+   local blocks = ut.parse(sentence)
+   return vim.iter(coroutine.wrap(function()
+      local idx = 0
+      for i, v in ipairs(blocks.content) do
+         if blocks.type[i] == "hans" then
+            for _, word in cutfunc(v) do
+               idx = idx + 1
+               coroutine.yield(idx, word)
+            end
+         else
+            idx = idx + 1
+            coroutine.yield(idx, blocks.content[i])
+         end
       end
-   end
-   return res
+   end))
 end
 
-M.cut = function(sentence)
-   return vim.iter(M.lcut(sentence))
-end
-
--- Pr(vim.iter(M.cut_no_hmm "你好世界123"):totable())
-
--- for v in M.cut "你好世界123" do
---    print(v)
--- end
---
 return M
