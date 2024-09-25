@@ -161,4 +161,11 @@ M.cut = function(sentence, HMM)
    end))
 end
 
+M.lcut = function(sentence, HMM)
+   return M.cut(sentence, HMM):fold({}, function(acc, n, word)
+      acc[n] = word
+      return acc
+   end)
+end
+
 return M
