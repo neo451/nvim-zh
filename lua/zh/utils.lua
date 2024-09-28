@@ -69,7 +69,7 @@ local rules = (full_num + nums + engs + full_punc + half_punc + hans + space) ^ 
 
 ---@param str string
 ---@return ZhState
-function M.parse(str)
+M.parse = function(str)
    --check no \n
    rules:match(str)
    local retL = L
@@ -92,17 +92,6 @@ M.type = function(str)
    else
       return types[1]
    end
-end
-
----@param c string
----@return boolean
-function M.is_eng(c)
-   return M.type(c) == "western"
-end
----@param c string
----@return boolean
-function M.is_punctuation(c)
-   return (M.type(c) == "fullwidth") or (M.type(c) == "halfwidth")
 end
 
 ---@param str string

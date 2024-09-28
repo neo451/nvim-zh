@@ -33,7 +33,7 @@ M.initialize = function()
    for word, v in pairs(M.dict) do
       M.dict[word] = log(v) - M.logtotal
    end
-   print(("jieba-lua initialized in %s"):format(os.clock() - t))
+   -- print(("jieba-lua initialized in %s"):format(os.clock() - t))
 end
 
 local get_DAG = function(sentence)
